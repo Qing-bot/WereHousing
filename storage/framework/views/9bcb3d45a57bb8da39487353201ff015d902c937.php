@@ -1,8 +1,8 @@
-@extends('layouts.navbar')
 
-@section('title', 'Home Page')
+
+<?php $__env->startSection('title', 'Home Page'); ?>
     
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="flex items-center justify-center">
     <div class="flex items-center justify-center py-2">
         <form class="flex flex-row gap-3">
@@ -75,25 +75,26 @@
 </div>
 <div class="flex justify-center">
     <div class="col-auto content-center">
-         @if ($products)
-         @foreach ($products as $product)
+         <?php if($products): ?>
+         <?php $__currentLoopData = $products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <div class="col">
                 <div class="card h-100 text-black bg-light mb-3" style="width: 100%">
-                    {{-- {{dd(asset('images/'.$product->image))}} --}}
-                    <img class="card-img-top" src="{{asset('storage/images/'.$product->image)}}" alt="Image Not Found" style="width: 100%; height:70%">
+                    
+                    <img class="card-img-top" src="<?php echo e(asset('storage/images/'.$product->image)); ?>" alt="Image Not Found" style="width: 100%; height:70%">
                     <div class="card-body">
-                        <h5 class="card-title">{{ $product->name }}</h5>
-                        <p class="card-text">Stock: {{$product->stock}}</p>
-                        <p class="card-text">{{$product->description}}</p>
+                        <h5 class="card-title"><?php echo e($product->name); ?></h5>
+                        <p class="card-text">Stock: <?php echo e($product->stock); ?></p>
+                        <p class="card-text"><?php echo e($product->description); ?></p>
                         
                     </div>
                 </div>
             </div>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
-            @else
+            <?php else: ?>
          <div class="text-3xl font-bold w-full text-gray-700 bg-gray-500">No data found</div>
-        @endif
+        <?php endif; ?>
     </div>
 </div>
-    @endsection
+    <?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.navbar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\NATHANIEL ORION\Downloads\Werehousing\resources\views/main.blade.php ENDPATH**/ ?>
