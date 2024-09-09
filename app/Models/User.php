@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -21,9 +21,38 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'address'
+        'role_id',
     ];
+    public function histories()
+    {
+        return $this->hasMany(History::class);
+    }
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
 
+    public function suppliers()
+    {
+        return $this->belongsToMany(User::class, 'seller_supplier', 'seller_id', 'supplier_id')
+                    ->whereHas('role', function($query) {
+                        $query->where('name', 'supplier');
+                    })
+                    ->withTimestamps();
+    }
+
+    public function sellers()
+    {
+        return $this->belongsToMany(User::class, 'seller_supplier', 'supplier_id', 'seller_id')
+                    ->whereHas('role', function($query) {
+                        $query->where('name', 'seller');
+                    })
+                    ->withTimestamps();
+    }
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -42,4 +71,6 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    
 }

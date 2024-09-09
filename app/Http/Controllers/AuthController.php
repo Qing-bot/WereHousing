@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\History;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Session;
@@ -36,6 +37,14 @@ class AuthController extends Controller
             return redirect()->back()->withErrors('Invalid Credential!');
         }
 
+        History::create([
+            'user_id' => Auth::id(),
+            'product_id' => 0,    
+            'action' => 'Masuk',
+            'quantity' => 0, 
+            'details' => 'Pengguna Masuk',
+            'action_time' => now(),
+        ]);
         return redirect()->route('index_home');
     }
 
@@ -49,6 +58,10 @@ class AuthController extends Controller
             'inputPassword' => 'required|min:5|max:20', 
         ]);
 
+        if (User::where('email', $request->input('inputEmail'))->exists()) {
+            return redirect()->back()->withErrors(['inputEmail' => 'Email already exists.']);
+        }
+        
         $newUser = new User();
         $newUser->email = $request->input('inputEmail');
         $newUser->username = $request->input('inputUsername');
@@ -61,7 +74,16 @@ class AuthController extends Controller
     }
     public function actionlogout()
     {
+        History::create([
+            'user_id' => Auth::id(),
+            'product_id' => 0,    
+            'action' => 'Keluar',
+            'quantity' => 0, 
+            'details' => 'Pengguna Keluar',
+            'action_time' => now(),
+        ]);
         Auth::logout();
+        
         return redirect('/');
     }
     

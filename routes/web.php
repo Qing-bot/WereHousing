@@ -3,6 +3,12 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ItemController;
+use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\SellerController;
+use App\Http\Controllers\CheckoutController;
+use App\Models\History;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,22 +24,22 @@ Route::get('/', function () {
     return view('login');
 });
 
-//idk dibawah buat url2 nyas
-Route::get('/addItem', function () {
-    return view('home');
-});
+// //idk dibawah buat url2 nyas
+// Route::get('/addItem', function () {
+//     return view('home');
+// });
 
-Route::get('/home', function () {
-    return view('home');
-});
+// Route::get('/home', function () {
+//     return view('home');
+// });
 
-Route::get('/login', function () {
-    return view('login');
-});
+// Route::get('/login', function () {
+//     return view('login');
+// });
 
-Route::get('/register', function () {
-    return view('register');
-});
+// Route::get('/register', function () {
+//     return view('register');
+// });
 
 
 //yang bawah ini buat login register, masih on work
@@ -44,18 +50,50 @@ Route::post('login', [AuthController::class,
     'register'])->name('register');
 
     Route::post('logout', [AuthController::class, 
-    'logout'])->name('logout');
+    'actionlogout'])->name('logout');
 
+// Login -> Register Register -> login
 Route::get('register', [AuthController::class, 
     'index_register'])->name('index_register')
     ;
 
 Route::get('login', [AuthController::class, 
-   'index_login'])->name('index_login')
-   ;
+'index_login'])->name('index_login')
+;
 
-Route::get('home', [HomeController::class,'index_home'])->name('index_home');
-// Route::post('actionlogin', [LoginController::class, 'actionlogin'])->name('actionlogin');
+// Route::get('/profile', [UserController::class, 'index_profile'])->name('profile')->middleware('auth');
+// Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('profile.update')->middleware('auth');
 
-// Route::get('home', [HomeController::class, 'index'])->name('home')->middleware('auth');
-// Route::get('actionlogout', [LoginController::class, 'actionlogout'])->name('actionlogout')->middleware('auth');
+//Mavbar
+Route::get('/profile', [HomeController::class,'showProfile'])->name('showProfile')->middleware('auth');
+Route::get('/profile/edit', [SellerController::class, 'editProfile'])->name('editProfile')->middleware('auth');
+Route::post('/profile/update', [SellerController::class, 'updateProfile'])->name('updateProfile')->middleware('auth');
+Route::get('/history', [HistoryController::class, 'showHistory'])->name('showHistory')->middleware('auth');
+
+//Homepage
+Route::get('main', [HomeController::class,'index_home'])->name('index_home')->middleware('auth');
+Route::get('main/search', [HomeController::class, 'viewPageSearch'])->name('viewPageSearch')->middleware('auth');
+Route::get('addItem', [HomeController::class,'index_addItem'])->name('index_addItem')->middleware('auth');
+Route::get('/addItem/create', [ItemController::class, 'createProduct'])->name('createProduct')->middleware('auth');
+Route::post('/addItem', [ItemController::class, 'insertProduct'])->name('insertProduct')->middleware('auth');
+
+Route::get('/productDetail/{id}', [ItemController::class, 'viewProductDetail'])->name('productDetail')->middleware('auth');
+Route::patch('/productDetail/{id}', [ItemController::class, 'updateStock'])->name('updateStock')->middleware('auth');
+Route::delete('/productDetail/{id}', [ItemController::class, 'deleteProduct'])->name('deleteProduct')->middleware('auth');
+
+Route::get('/checkout', [CheckoutController::class, 'viewCheckout'])->name('viewCheckout');
+Route::patch('/checkout/update-quantity/{id}', [CheckoutController::class, 'updateQuantity'])->name('updateQuantity');
+Route::post('/checkout/add/{id}', [CheckoutController::class, 'addToCheckout'])->name('addToCheckout');
+
+Route::delete('/checkout/remove-item/{id}', [CheckoutController::class, 'removeItem'])->name('removeItem');
+Route::post('/checkout/process', [CheckoutController::class, 'processCheckout'])->name('processCheckout');
+
+Route::get('/add-stock', [ItemController::class, 'addStockPage'])->name('addStockPage')->middleware('auth');
+Route::post('/add-stock', [ItemController::class, 'processAddStock'])->name('processAddStock')->middleware('auth');
+Route::post('/updateStock/{id}', [ItemController::class, 'updateStock'])->name('updateStock');
+
+Route::get('/product/{id}/edit', [ItemController::class, 'editProduct'])->name('editProduct')->middleware('auth');
+Route::patch('/product/{id}', [ItemController::class, 'updateProduct'])->name('updateProduct')->middleware('auth');
+
+Route::post('/suppliers/{id}', [SellerController::class, 'addSupplier'])->middleware('auth');
+Route::delete('/suppliers/{id}', [SellerController::class, 'removeSupplier'])->middleware('auth');
